@@ -1,0 +1,339 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+library(stringr)
+library(tidyr)
+library(dplyr)
+library(zoo)
+library(Metrics)
+library(caret)
+library(MASS)
+library(ggplot2)
+library(reshape2)
+library(mltools)
+library(DescTools)
+library(plotly)
+library(psych)
+library(lm.beta)
+library(lmtest)
+library(car)
+library(sandwich)
+library(ggplot2)
+#Include all library needed
+
+```
+
+```{r}
+getwd() #get working directory
+XSTK_GPU = read.csv("All_GPUs.csv",header=TRUE,na.strings=c("","\n- ","\n","\nUnknown Release Date ")) #read csv file
+Main_XSTK = XSTK_GPU[,c("Memory","Resolution_WxH","Manufacturer","Core_Speed","Memory_Bus","Memory_Speed","Memory_Type","Process","Pixel_Rate","Texture_Rate", "TMUs", "Shader", "Memory_Bandwidth")] #select needed features
+
+print( apply(is.na(Main_XSTK),2,sum)) #To check for null values
+
+```
+
+```{r}
+Convert <- function(x){ 
+    if(is.na(x)) 
+        {return (NA)} 
+    else 
+        #strsplit return về 1 list các list: vd 7 MHz -> list(list(7),list(MHz))
+        #strsplit[[1]] để truy cập vào list đầu tiên ->list(7)
+        #strsplit[[1]][[1]] truy cập phần tử đầu tiên trong list -> 7
+        {return (as.double( strsplit(x," ")[[1]][[1]] )) 
+    }
+} #function to convert character to numeric value
+```
+
+```{r}
+Main_XSTK$Memory <- sapply(Main_XSTK$Memory, Convert) #chuyen memory ve so
+Main_XSTK$Memory[is.na(Main_XSTK$Memory)] = median(Main_XSTK$Memory, na.rm=T)
+```
+
+```{r}
+Main_XSTK$Core_Speed <- sapply(Main_XSTK$Core_Speed, Convert) #Chuyen Core_Speed ve num
+Main_XSTK$Core_Speed[is.na(Main_XSTK$Core_Speed)] = median(Main_XSTK$Core_Speed, na.rm=T) #fill corespeed = median
+```
+
+```{r}
+Main_XSTK$Memory_Bus <- sapply(Main_XSTK$Memory_Bus, Convert) #chuyen memory ve so
+Main_XSTK$Memory_Bus[is.na(Main_XSTK$Memory_Bus)] = median(Main_XSTK$Memory_Bus, na.rm=T) #cung fill = median vi chi miss 5 value
+```
+
+```{r}
+#Memory Type là Char, nên fill bằng mode 
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+} #Function to fill with mode
+mode_value <- Mode(Main_XSTK$Memory_Type) #Calculate the mode value
+Main_XSTK$Memory_Type[is.na(Main_XSTK$Memory_Type)] <- mode_value #fill Memory Type with Mode Value
+```
+
+```{r}
+#Shader cung fill bang mode value luon, nhung se chia 2 condition
+mode_value <- Mode(Main_XSTK$Shader)
+Main_XSTK$Shader <- ifelse(is.na(Main_XSTK$Shader), mode_value, Main_XSTK$Shader)
+```
+
+```{r}
+#Process
+Main_XSTK$Process = as.double( gsub("[^0-9]","",Main_XSTK$Process) )
+Main_XSTK$Process[is.na(Main_XSTK$Process)] = median(Main_XSTK$Process, na.rm=T)
+```
+
+```{r}
+#Pixel Rate
+Main_XSTK$Pixel_Rate = sapply(Main_XSTK$Pixel_Rate, Convert)
+Main_XSTK$Pixel_Rate[is.na(Main_XSTK$Pixel_Rate)] = median(Main_XSTK$Pixel_Rate, na.rm=T)
+```
+
+```{r}
+#Texture Rate
+Main_XSTK$Texture_Rate = sapply(Main_XSTK$Texture_Rate, Convert)
+Main_XSTK$Texture_Rate[is.na(Main_XSTK$Texture_Rate)] = median(Main_XSTK$Texture_Rate, na.rm=T)
+```
+
+```{r}
+#Memory Speed
+Main_XSTK$Memory_Speed = sapply(Main_XSTK$Memory_Speed, Convert)
+Main_XSTK$Memory_Speed[is.na(Main_XSTK$Memory_Speed)] = median(Main_XSTK$Memory_Speed, na.rm=T)
+```
+
+```{r}
+Main_XSTK$Memory_Bandwidth <- as.numeric(gsub("[^0-9.]", "", Main_XSTK$Memory_Bandwidth))
+Main_XSTK$Memory_Bandwidth[is.na(Main_XSTK$Memory_Bandwidth)] = median(Main_XSTK$Memory_Bandwidth, na.rm=T)
+```
+
+```{r}
+Main_XSTK$TMUs[is.na(Main_XSTK$TMUs)] = median(Main_XSTK$TMUs, na.rm=T)
+```
+
+```{r}
+mode_value <- Mode(Main_XSTK$Resolution_WxH) #Calculate the mode value
+Main_XSTK$Resolution_WxH[is.na(Main_XSTK$Resolution_WxH)] <- mode_value
+```
+
+```{r}
+#check for missing values again:
+print( apply(is.na(Main_XSTK),2,sum)) #To check for null values
+```
+
+
+```{r}
+
+summary(Main_XSTK)#tom tat lai 1 lan nua 
+```
+
+```{r}
+describe(Main_XSTK)
+```
+
+```{r}
+hist(Main_XSTK$Memory,xlab="Memory (MB)",main="Histogram of Memory", col="violet",label=T, ylim=c(0,1500))
+hist(Main_XSTK$Memory_Bus,xlab="Memory Bus (Bit)",main="Histogram of Memory Bus", col="pink",label=T, ylim=c(0,4000))
+hist(Main_XSTK$Memory_Speed,xlab="Memory Speed (MHz)",main="Histogram of Memory Speed", col="#4393C3",label=T, ylim=c(0,600),xlim=c(0,2500))
+
+```
+
+```{r}
+hist(Main_XSTK$Core_Speed,xlab="Core Speed (MHz)",main="Histogram of Core Speed", col="yellow",label=T, ylim=c(0,1500))
+hist(Main_XSTK$Process,xlab="Process (nm)",main="Histogram of Process", col="red",label=T, ylim=c(0,2000))
+hist(Main_XSTK$Pixel_Rate,xlab="Pixel Rate (GPixel/s)",main="Histogram of Pixel Rate", col="orange",label=T, ylim=c(0,1500))
+```
+
+```{r}
+hist(Main_XSTK$Texture_Rate,xlab="Texture Rate (GTexel/s)",main="Histogram of Texture Rate", col="yellowgreen",label=T, ylim=c(0,1500))
+hist(Main_XSTK$Memory_Bandwidth,xlab="Memory Bandwidth(GB/s)",main="Histogram of Memory Bandwidth", col="green4",label=T, ylim=c(0,2000))
+hist(Main_XSTK$TMUs,xlab="TMUs",main="Histogram of TMUs", col="darkgreen",label=T, ylim=c(0,1500))
+```
+
+```{r}
+hist(Main_XSTK$Shader,xlab="Shader",main="Histogram of Shader", col="gray1",label=T, ylim=c(0,3000))
+```
+
+```{r}
+#Dem so luong manufacturer
+count_Manu <- table(Main_XSTK$Manufacturer)
+count_Manu
+```
+
+```{r}
+data <- data.frame(
+  Manufacturer = c("Nvidia", "AMD", "ATI","Intel"),
+  Count = c(1743, 1317, 92,254)
+)
+ggplot(data, aes(x = Manufacturer, y = Count)) +
+  geom_bar(stat = "identity", fill = "darkblue") +
+  labs(title = "Manufacturer Distribution", x = "Manufacturer", y = "Count",frequency=TRUE)
+```
+
+```{r}
+data <- data.frame(
+  Resolution = c("1280x1024", "1600x1200", "1600x1280", "1600x900", "1680x1050", "1920x1200", "1920x1440", "2048x1536", "2560x1600","3840x2160","3840x2400","4096x2160","4096x2304","4096x3112","5120x2160","5120x2880","5120x3200","5760x2160","7680x3200","7680x4320"),
+  Count = c(3,        28,         1,         2 ,        1  ,       2,         3 ,       85,      1175,3,         1,      1525,        41,         5,         1,        48,       217,         1,6,258  )
+)
+ggplot(data, aes(x = Resolution, y = Count)) +
+  geom_bar(stat = "identity", fill = "gold") +
+  labs(title = "Resolution Distribution", x = "WxH", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+count_Type <- table(Main_XSTK$Memory_Type)
+count_Type
+```
+
+```{r}
+data <- data.frame(
+  Type = c("DDR","DDR2","DDR3","DDR4","eDRAM","GDDR2",  "GDDR3","GDDR4", "GDDR5","GDDR5X", "HBM-1", "HBM-2 "),
+  Count = c( 113,    102,    657,     51,      3 ,     5 ,   300,      8 ,  2076 ,    79,      6  ,    6 )
+)
+ggplot(data, aes(x = Type, y = Count)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Memory Type Distribution", x = "Memory Type", y = "Count")
+```
+
+```{r}
+par(mfrow=c(1,4))
+boxplot(Main_XSTK$Core_Speed,col="lightyellow", main="boxplot of Core Speed",xlab = "Core Speed",ylab = "MHz")
+boxplot(Main_XSTK$Pixel_Rate,col="yellow", main="boxplot of Pixel Rate",xlab = "Pixel Rate",ylab = "GPixel/s")
+boxplot(Main_XSTK$Memory_Speed,col="#D6604D", main="boxplot of Memory Speed",xlab = "Memory Speed",ylab = "MHz")
+boxplot(Main_XSTK$TMUs,col="mistyrose", main="boxplot of TMUs",xlab = "TMUs",ylab = "Units")
+```
+
+```{r}
+par(mfrow=c(1,4))
+boxplot(Main_XSTK$Texture_Rate,col="navy", main="boxplot of Texture Rate",xlab = "Texture Rate",ylab = "GTexel/s")
+boxplot(Main_XSTK$Memory,col="beige", main="boxplot of Memory",xlab = "Memory",ylab = "MB")
+boxplot(Main_XSTK$Shader,col="orange", main="boxplot of Shader",xlab = "Shader")
+boxplot(Main_XSTK$Process,col="#56604D", main="boxplot of Process",xlab = "Process",ylab = "nm")
+```
+
+```{r}
+par(mfrow=c(1,4))
+boxplot(Main_XSTK$Shader,col="orange", main="boxplot of Shader",xlab = "Shader")
+boxplot(Main_XSTK$Memory_Bus,col="darkgreen", main="boxplot of Memory Bus",xlab = "Memory Bus",ylab = "Bit")
+```
+
+```{r}
+library(randomForest) #include to use randomforest
+set.seed(123)  # Set seed for reproducibility
+rf_model <- randomForest(Memory_Speed ~ Memory + Core_Speed + Memory_Bus + Memory_Type + Process + Pixel_Rate + Texture_Rate + Memory_Bandwidth , data = Main_XSTK) #Tao random forest model de chon variable
+
+```
+
+```{r}
+importance(rf_model) # Show importance of variables
+varImpPlot(rf_model) #Draw it, Higher the value of mean decrease accuracy or mean decrease gini score , higher the importance of the variable in the model. In the plot shown above, Account Balance is most important variable.
+```
+
+```{r}
+#Make Linear Regression model, choose the variable is Core_Speed, Memory_Bus, Memory_Speed, Process, Pixel_Rate, Texture_Rate, ROPs, TMUs, L2_Cache, split the data to train and test (80% for train and 20% for test)
+trainIndex <- createDataPartition(Main_XSTK$Memory_Speed, p = 0.8, list = FALSE)
+train_data <- Main_XSTK[trainIndex, ] #80% for train
+test_data <- Main_XSTK[-trainIndex, ] #20% for test
+```
+
+```{r}
+#Make model:
+lm_model <- lm(Memory_Speed ~ Memory + Core_Speed + Memory_Bus + Memory_Type + Process + Pixel_Rate + Texture_Rate + Memory_Bandwidth, data = train_data) #Base on the Variables
+print(summary(lm_model)) #Print the summary of the model, as we can see the R-Square for this model is 0.7611, at this rate, this is acceptable for this dataset
+```
+
+```{r}
+#Let's test for the assumption,
+#Assumption 1:Assumption One: Linearity of the Data. We can check the linearity of the data by looking at the Residual vs Fitted plot. 
+plot(lm_model, 1) #This red line is not too straight on 0 line, but it's still acceptable for this model
+```
+```{r}
+#Assumption 2:Predictors (x) are Independent & Observed with Negligible Error
+#The easiest way to check the assumption of independence is using the Durbin-Watson test.
+durbinWatsonTest(lm_model)#The null hypothesis states that the errors are not auto-correlated with themselves (they are independent). Thus, if we achieve a p-value > 0.05, we would fail to reject the null hypothesis. This would give us enough evidence to state that our independence assumption is met!
+```
+```{r}
+#Assumption 3: Residual Errors have a Mean Value of Zero
+residual_mean <- mean(residuals(lm_model))
+print(paste("Mean of Residuals:", residual_mean)) #This value is 1.18e-12, approximate 0, so this assumption has been met
+```
+```{r}
+#Assumption 4:Residual Errors have Constant Variance
+plot(lm_model, 3) # Ideally, we would want to see the residual points equally spread around the red line, which would indicate constant variance.
+```
+```{r}
+#Testing for normality of the the errors: To check this, we have to use Q-Q plot for normality consideration. The output we expect that the residuals will mostly scatter close to the straight line to get normality hypothesis accepted.
+plot(lm_model, 2) #We can conclude that this model can be normally accurate, not 100% accurate. Perhaps another model will be more fitted for this data
+```
+
+```{r}
+#Test for accuracy
+predictions <- predict(lm_model, newdata = test_data)
+scatter_data <- data.frame(Actual = test_data$Memory_Speed, Predicted = predictions)
+plot(scatter_data$Actual, scatter_data$Predicted, xlab = "Actual Memory Speed",
+    ylab = "Predicted Memory Speed",
+    main = "Scatter Plot of Actual vs Predicted Memory Speed",
+    col = "blue")
+# Add a reference line (y = x)
+ abline(0, 1, col = "red", lwd = 2, lty = 2)# In an ideal scenario, where the predicted memory speeds perfectly match the actual memory speeds, all the points would fall on a diagonal line with a slope of 1 (y = x). Deviations from this diagonal line indicate discrepancies between the actual and predicted values.
+```
+```{r}
+residuals <- residuals(lm_model)
+hist(residuals, main = "Histogram of Residuals", xlab = "Residuals") #By examining the histogram of residuals, you can assess whether the residuals are approximately normally distributed, which is an assumption of many linear regression models. If the histogram shows a roughly bell-shaped curve, it suggests that the assumption is reasonable
+```
+```{r}
+rmse <- sqrt(mean((predictions - test_data$Memory_Speed)^2))
+print(paste("Root Mean Squared Error (RMSE):", rmse))
+rsquared <- cor(predictions, test_data$Memory_Speed)^2
+print(paste("R-squared:", rsquared))
+#This dataset is ranged from 10 to ~1700 so this error can be assume as small value so it can be accepted 
+```
+```{r}
+results<-cbind(predictions,test_data$Memory_Speed)
+colnames(results)<-c('pred','real')
+results<-as.data.frame(results)
+head(results, 10)
+```
+
+```{r}
+#Random Forest
+#We use the same train data and test data above, the model is still rf_model we made to choose variable
+print(rf_model)
+#This will give us a look at this model
+# Type of Random Forest: Indicates whether the Random Forest model is used for regression or classification. In this case, it's a regression Random Forest, meaning it's used for predicting numeric values (Release Price)
+#Number of Trees: Specifies the number of decision trees created by the Random Forest algorithm. Random Forest builds multiple decision trees and combines their predictions to improve the accuracy and robustness of the model. In this example, the model consists of 500 decision trees.
+#No. of Variables Tried at Each Split: Indicates the number of predictor variables considered for each split in the decision trees. Random Forest randomly selects a subset of predictor variables at each split to create diverse trees. In this example, 4 predictor variables are tried at each split.
+#Mean of Squared Residuals: The mean of the squared differences between the actual values and the predicted values (residuals) of the target variable (Release_Price). It provides a measure of the model's accuracy. A lower value indicates better performance, as it means the model's predictions are closer to the actual values. (5295.388 is a really good outcome, better than linear regression(x2) )
+#% Var Explained: The percentage of variance explained by the mode, the higher the $Var, the better the model
+```
+```{r}
+plot(rf_model, main = "RF model") #Plot the model
+```
+
+```{r}
+#Test the random forest model
+predictions <- predict(rf_model, newdata = test_data)
+mae <- mean(abs(predictions - test_data$Memory_Speed))
+rmse <- sqrt(mean((predictions - test_data$Memory_Speed)^2))
+rsquared <- cor(predictions, test_data$Memory_Speed)^2
+rf_model
+print(paste("Mean Absolute Error (MAE):", mae))
+print(paste("Root Mean Squared Error (RMSE):", rmse))
+print(paste("R-squared:", rsquared)) #This Value is really near 1, so this may be the most fit model for our dataset
+```
+```{r}
+residuals <- test_data$Memory_Speed - predictions
+plot(residuals, main = "Residuals of Random Forest Model", xlab = "Observations", ylab = "Residuals")
+```
+```{r}
+# Now, let’s display the predicted vs. the actual values
+results<-cbind(predictions,test_data$Memory_Speed)
+colnames(results)<-c('pred','real')
+
+results<-as.data.frame(results)
+head(results, 10)
+```
+.
