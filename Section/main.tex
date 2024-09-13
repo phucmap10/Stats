@@ -1,0 +1,143 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{head}
+\usepackage{array}
+\usepackage{parskip}
+
+%%%%%%%%%% Global layout %%%%%%%%%%%%%%%%
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr}
+%%%%%%%%%% Encodings %%%%%%%%%%%%%%%%
+\usepackage{amsmath} % advanced math extension
+\usepackage{comment}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{indentfirst}
+\usepackage{color}
+\usepackage{graphicx} % Standard graphics package
+%%%%%%%%%% Better table %%%%%%%%%%%%%%%%
+\usepackage{array,booktabs} % customization for table
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage{multicol}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{rotating} % rotate objects(table,...)
+\usepackage{graphics}
+\usepackage{geometry} % easier management for page size (margin)
+\usepackage{setspace}
+\usepackage{epsfig}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage{pifont}
+\usepackage[english]{babel}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true}
+\usepackage{longtable}
+\renewcommand{\baselinestretch}{1.5} 
+
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+\begin{center}
+    \textbf{VIETNAM NATIONAL UNIVERSITY, HO CHI MINH CITY}\\
+    \textbf{HO CHI MINH CITY UNIVERSITY OF TECHNOLOGY}\\
+    \textbf{Faculty of Computer Science and Engineering}\\
+
+    \vspace{0.5 cm}
+    \includegraphics[scale = 0.3]{Logo.png}\\
+    \vspace{0.5 cm}
+    \large\textbf{Course:}\\
+    \large\textbf{PROBABILITY AND STATISTICS (MT2013)}\\
+    \vspace{0.5 cm}
+    \begin{tabular}{c}
+         \hline\\ \textbf{Project: MEMORY SPEED PREDICTION} \\
+         \textbf{BY USING MULTIPLE LINEAR REGRESSION}\\ \\ \hline
+    \end{tabular}
+
+\end{center}
+
+
+
+
+\begin{center}
+    \begin{tabular}{r l}
+        \textbf{Supervisor:}& \textbf{Dr. Nguyen Tien Dung} \\
+        Students:&Nguyen Thien Loc - 2252460 \\ 
+        &Nguyen Hong Phuc - 2252639 \\ 
+        &Ly Trieu Uy  - 2252889 \\ 
+        &Le Nhan Van - 2252899 \\ 
+        &Che Thanh Vy - 2252937 \\
+        Class:&CC01 - Group 25\\
+    \end{tabular}
+    \\
+    \vspace{1 cm}
+    \centering\textbf{Ho Chi Minh City, April 2024}
+\end{center}
+\end{titlepage}
+
+
+% Start from here
+
+\newpage
+\vspace*{0.25 cm}
+\textbf{Group contribution:}\\
+
+\begin{longtable}{|c|c|c|}
+    \hline
+    Members & Contribution & Note\\
+    \hline
+    Nguyen Thien Loc     & 20\% &\\
+    \hline
+    Nguyen Hong Phuc     &  20\% & Leader\\
+    \hline
+    Ly Trieu Uy  &20\% &\\
+    \hline
+    Le Nhan Van & 20\% &\\ 
+    \hline
+    Che Thanh Vy & 20\% &\\
+    \hline
+\end{longtable}
+
+\textbf{Lecturers' assessment:}
+\begin{longtable}{|c|p{5 em}|c|}
+    \hline
+    Members & \centering Grade & Assessment \\
+    \hline
+    Nguyen Thien Loc     &&   \\
+    \hline
+    Nguyen Hong Phuc     & &\\
+    \hline
+    Ly Trieu Uy  && \\
+    \hline
+    Le Nhan Van & & \\ 
+    \hline
+    Che Thanh Vy & & \\
+    \hline
+    
+\end{longtable}
+\newpage
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\tableofcontents
+\vspace*{0.25 cm}
+\include{Section/1}
+\include{Section/2}
+\include{Section/3}
+\include{Section/4}
+\include{Section/5}
+\include{Section/6}
+\include{Section/7}
+\bibliographystyle{plain}
+\newpage
+\bibliography{refs}
+\begin{enumerate}[{[1]}]
+
+    \item Douglas C. Montgomery, Applied Statistics and Probability for Engineers
+    \item Diane Kiernan, Natural Resources Biometrics
+    \item \href{https://www.datacamp.com/tutorial/linear-regression-R?fbclid=IwZXh0bgNhZW0CMTAAAR2rM1Nk78oA2HyQ8HTfU6cdiT5EDVTDD754uUernmQtS4xvOesVLav6Tuo_aem_AYgNihmoF16jmpNznycZf9GcR6YiCY5vDKZSCDlcCY-0rGH4CSdQ8ySsrXzBkGCcXGaVxwPHTxx3DrkHygbUZfn2}{Datacamp, Linear Regression in R Tutorial}
+    \item \href{https://www.r-bloggers.com/2021/04/random-forest-in-r/?fbclid=IwZXh0bgNhZW0CMTAAAR0SgzBABMzhICDuovVeSGvuoMyapky28GsJxdwXjbe0DrwliqBCYvaBsxI_aem_AYgmjl7qPmInPhnCBnikDUa3tMNXbZcWbo0VjxhdQ7-tL5OytsaEkuXhw25GFnoXqstq-Tna2eMV2vASqpbdWgVV}{R-bloggers, Random Forest in R}
+    \item \href{https://godatadrive.com/blog/basic-guide-to-test-assumptions-of-linear-regression-in-r?fbclid=IwZXh0bgNhZW0CMTAAAR28-KwzGrlC4-xa-z2NWsLYIWjr-oKTO7KUHaphn3k4ErIvTxSUs_PDENs_aem_AYjy1XX2JvwS3wLNsgsqBoAcKMQagbLfxHsB2sIm0P1pfg3e7A-_pvEaSzLxX1y1J-2a5FGi98dwLUYsTBvQgllz}{Datadrive, A Basic Guide to Testing the Assumptions of Linear Regression in R }
+    \item \href{https://statisticsbyjim.com/regression/multicollinearity-in-regression-analysis/?fbclid=IwZXh0bgNhZW0CMTAAAR23Tx2xJS6mh7-M1LI5CVTlatsc1UNnBLYc7Z7-cOHTTJ_Z_vw1XOblRpY_aem_AYhh_OyebBF1dKCDlHk2LPZqbq413mxpnXpQoYQ4o_KWWR8m8OKyXfM8CRoBQEiJKjg1ywtSieGlHNfKte-s5_fS}{Statistics by Jim, Multicollinearity in Regression Analysis: Problems, Detection, and Solutions }
+\end{enumerate}
+\centering --END--
+
+\end{document}

@@ -1,0 +1,11 @@
+\section{Discussion and Extension}
+\tab The normality assumption is a core requirement in traditional linear regression, which assumes that the residuals adhere to a normal distribution. However, our multiple linear regression (MLR) model does not meet  this assumption (Histogram of Residuals does not meet the normality assumption), raising doubts about the validity of certain inference techniques. Below, we explore the consequences and possible causes of this deviation from normality in residuals. 
+\begin{itemize}
+        \item \textbf{Outliers:} The presence of outliers, which are data points that significantly deviate from the rest of the dataset, can strongly affect the normality of residuals. These outliers may skew the distribution of residuals and lead to violations of the normality assumption in statistical analyses. 
+        \item \textbf{Reliability of Inference:} all Violating the normality assumption can impact the reliability of statistical inferences, such as confidence intervals and hypothesis tests for regression coefficients. 
+        \item \textbf{Prediction Interval:} While point predictions of the model may remain valid, prediction intervals could be affected, inaccurately reflecting the uncertainty of individual predictions. 
+        \item \textbf{Robustness in Larger Samples:} In larger samples, the Central Limit Theorem may mitigate the impact of non-normality, but caution is still necessary, particularly in smaller samples. 
+        \item \textbf{Potential Causes of Non-Normality:} Model misspecification or the presence of outliers may lead to non-normal residuals.
+        \item \textbf{Data preprocessing:} Filling a large number of cells with the same repetitive value can introduce several types of errors during data preprocessing and analysis. 
+        
+    \end{itemize}

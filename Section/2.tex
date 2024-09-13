@@ -1,0 +1,59 @@
+\section{Background}
+\subsection{Concept of Multiple linear regression (MLR)}
+\tab Multiple linear regression is a statistical method used in various fields to analyze relationships between a dependent variable and two or more independent variables. It extends simple linear regression by incorporating multiple predictors, allowing for a more nuanced understanding of their collective 
+influence. The model estimates coefficients for each predictor, indicating their strength and direction of effect. 
+
+\subsection{The model of MLR}
+\begin{center}
+    $\textbf{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_n x_n + \epsilon$
+\end{center}
+\tab where:
+\begin{itemize}
+    \item $y$ is the dependent variable
+    \item $x_i$ is the $i_{th}$ independent variable
+    \item $\beta_0$: y-intercept
+    \item $\beta_{i}$: coefficient of $x_i$
+    \item $\epsilon$: is the error term
+\end{itemize}
+\subsection{Assumptions of MLR}
+\subsubsection{Linearity}
+\tab Independent variables and dependent variable shared a linear relationship. 
+\subsubsection{Homoscedasticity}
+
+\tab The error term (random disturbance in the 
+relationship between the independent variables and the dependent variable) is the same across all values of the independent variables. 
+
+\subsubsection{Independence}
+\tab The observations are not influenced by each other. 
+
+\subsubsection{Normality}
+\tab The errors are normally distributed. 
+
+\subsection{Advantages of linear regression}
+    \begin{itemize}
+        \item \textbf{Simplicity and Interpretability:} Linear-regression models are relatively simple and provide an easy-to-interpret mathematical formula that can generate predictions. Linear regression can be applied to various areas in business and academic study.
+        \item \textbf{Quick initial insight:} The regression coefficients quickly provide clear insights into the relative importance and effects of each independent variable on the dependent variable even if the relationship is not perfectly linear.
+        \item \textbf{Baseline model:} Linear regression is the fundamental model for improving to a more complex model. 
+        \item \textbf{Stability:} Particularly in situations when there are few features, linear regression tends to be more stable and less prone to overfitting. Having this can be helpful when working with smaller datasets. 
+    \end{itemize}
+
+\subsection{Concept of Random forest regression (RFR)}
+\tab Random Forest is a versatile machine learning algorithm that's adept at classification and regression tasks. It constructs a multitude of decision trees during training and combines their predictions to make more accurate and robust predictions compared to individual trees. By leveraging random sampling of data and features, it mitigates overfitting and generalizes well to unseen data. Additionally, it requires minimal hyperparameter tuning, making it easy to use and suitable for a wide range of applications. 
+
+\subsection{Assumptions of RFR}
+\subsubsection{Quality of data}
+\tab Real values and datasets with no missing value while the input value is continuous and the target variable is discrete are provided for best predictions. 
+
+\subsubsection{Independence of Trees}
+\tab Each tree's predictions must have very low correlations.  
+
+\subsubsection{Appropriate Hyperparameters}
+\tab While Random Forests are relatively robust to hyperparameters, it is essential to tune them appropriately for optimal performance. Common hyperparameters include the number of trees in the forest, tree depth, minimum samples required for splitting nodes, and the number of features considered for each split. 
+
+\subsection{Advantages of random forest regression}
+
+    \begin{itemize}
+        \item \textbf{Quickly applied time:} Random forest regression requires shorter training time than other algorithms.
+        \item \textbf{High accuracy:} Predicts output with great accuracy, and it works efficiently even on big datasets and even when significant amount of data is absent.
+        \item \textbf{Reduced Bias:} As they combine the predictions of multiple trees, reducing the risk of bias associated with any single tree. 
+    \end{itemize}

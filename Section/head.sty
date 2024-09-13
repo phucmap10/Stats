@@ -1,0 +1,46 @@
+\ProvidesPackage{head}
+\parindent 0px
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm,amssymb, stmaryrd, amsfonts}
+\usepackage{array,booktabs,graphicx,listings}
+\usepackage[english]{babel}
+\usepackage{multicol}
+\usepackage[left = 25 mm, right = 25mm , top = 25mm, bottom = 25mm, paper = a4paper]{geometry}
+\usepackage{fancyhdr}
+\newcommand{\element}[1]{\textbraceleft #1\textbraceright}
+\setlength{\columnseprule}{0.5pt}
+\fancyhead{} % clear all header fields
+\fancyhead[RO,LE]{Faculty of Computer Science and Engineering}
+\fancyfoot{} % clear all footer fields
+\fancyfoot[LE,CO]{\thepage}
+\usepackage{makecell}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{
+  font=footnotesize
+}
+\newcommand\tab[1][1.27cm]{\hspace*{#1}}
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{codecolor}{HTML}{FFC300}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\tcbuselibrary{most,listingsutf8,minted}
+
+\tcbset{tcbox width=auto,left=1mm,top=1mm,bottom=1mm,
+right=1mm,boxsep=1mm,middle=1pt}
+
+\newtcblisting{myr}[1]{colback=codecolor!5,colframe=codecolor!80!black,listing only, 
+minted options={numbers=left, style=tcblatex,fontsize=\tiny,breaklines,autogobble,linenos,numbersep=3mm},
+left=5mm,enhanced,
+title=#1, fonttitle=\bfseries,
+listing engine=minted,minted language=r}
+
+
+% ------------------------------------------------------------------------------
+% Listings
+% ------------------------------------------------------------------------------
+\definecolor{mygreen}{HTML}{37980D}
+\definecolor{myblue}{HTML}{0D089F}
+\definecolor{myred}{HTML}{98290D}
